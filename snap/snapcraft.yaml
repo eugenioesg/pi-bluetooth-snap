@@ -1,0 +1,54 @@
+name: pi-bluetooth
+version: '0.1'
+summary: Initialize bluetooth on the pi3
+description: |
+  simple daemon snap that turns on BT by default on a raspberry pi3
+
+grade: stable
+confinement: strict
+
+apps:
+  init:
+    command: init-bluetooth
+    daemon: simple
+    plugs:
+      - serial-port
+  hciattach:
+    command: usr/bin/hciattach
+    plugs:
+      - serial-port
+
+#passthrough:
+#  layout:
+#    /etc/firmware:
+#      bind: $SNAP/lib/firmware
+
+parts:
+  bluez:
+    plugin: nil
+    override-build: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/bin
+      #mkdir -p $SNAPCRAFT_PART_INSTALL/usr/bin $SNAPCRAFT_PART_INSTALL/lib/firmware/brcm
+      # get latest BT firmware upstream
+      #      cp init-bluetooth $SNAPCRAFT_PART_INSTALL/bin
+      #      URL="https://archive.raspberrypi.org/debian/pool/main/b/bluez-firmware"
+      #      FW="$(wget -q -O- $URL/|html2text -width 200|grep all.deb|sed 's/^.*bluez/bluez/;s/.deb.*$/.deb/'|sort|uniq|tail -1)"
+      #      wget $URL/$FW
+      #      dpkg -x $FW tmp/
+      # we only want the bluetooth firmware
+      #      cp tmp/lib/firmware/brcm/BCM43430A1.hcd $SNAPCRAFT_PART_INSTALL/lib/firmware/brcm/
+      cp hciattach $SNAPCRAFT_PART_INSTALL/usr/bin/
+      cp init-bluetooth $SNAPCRAFT_PART_INSTALL/usr/bin/
+    #    override-prime: |
+    #      snapcraftctl prime
+    #      # we only want the hciattach binary and the firmware file
+    #      mv usr/bin/hciattach ../
+    #      mv lib/firmware/brcm/BCM43430A1.hcd ..
+    #      # drop everything else
+    #      rm -rf *
+    #      # put both file in place
+    #      mkdir -p usr/bin lib/firmware/brcm
+    #      mv ../hciattach usr/bin/
+    #      mv ../BCM43430A1.hcd lib/firmware/brcm/
+    #    stage-packages:
+    #      - bluez:armhf
