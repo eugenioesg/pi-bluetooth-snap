@@ -1,4 +1,4 @@
-name: pi-bluetooth
+name: pi-bluetooth-snap
 version: '0.1'
 summary: Initialize bluetooth on the pi3
 description: |
